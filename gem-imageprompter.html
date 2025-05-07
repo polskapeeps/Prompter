@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* Dark gray background */
+            color: #e5e7eb; /* Light gray text */
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            background-color: #1f2937; /* Darker card background */
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .btn {
+            background-color: #3b82f6; /* Blue button */
+            color: white;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #2563eb; /* Darker blue on hover */
+        }
+        .btn-secondary {
+            background-color: #4b5563; /* Gray button */
+        }
+        .btn-secondary:hover {
+            background-color: #374151;
+        }
+        textarea, input[type="text"] {
+            background-color: #374151; /* Dark input background */
+            color: #e5e7eb;
+            border: 1px solid #4b5563; /* Slightly lighter border */
+            border-radius: 8px;
+            padding: 10px;
+            width: 100%;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        textarea:focus, input[type="text"]:focus {
+            border-color: #3b82f6; /* Blue border on focus */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+            outline: none;
+        }
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            color: #d1d5db; /* Lighter gray for checkbox text */
+        }
+        .checkbox-label input[type="checkbox"] {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #4b5563;
+            border-radius: 6px;
+            margin-right: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .checkbox-label input[type="checkbox"]:checked {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+        .checkbox-label input[type="checkbox"]:checked::after {
+            content: '✔';
+            color: white;
+            font-size: 14px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .message-box {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 16px;
+            font-size: 0.9em;
+        }
+        .message-box-info {
+            background-color: #1e40af; /* Dark blue for info */
+            color: #bfdbfe; /* Light blue text */
+        }
+        .message-box-warning {
+            background-color: #9a3412; /* Dark orange for warning */
+            color: #fed7aa; /* Light orange text */
+        }
+        /* Custom scrollbar for WebKit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937; /* Background of the scrollbar track */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563; /* Color of the scrollbar thumb */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280; /* Color of the scrollbar thumb on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-8 md:py-12">
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white">Advanced Prompt Generator</h1>
+            <p class="text-lg text-gray-400 mt-2">Craft detailed prompts with various stylistic options.</p>
+        </header>
+
+        <div class="card">
+            <div class="mb-6">
+                <label for="baseIdea" class="block text-lg font-medium mb-2 text-gray-300">Enter your base idea or keywords:</label>
+                <textarea id="baseIdea" rows="4" placeholder="e.g., a futuristic city, a magical forest, a character concept..." class="shadow-sm"></textarea>
+            </div>
+
+            <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-md font-semibold mb-3 text-gray-300">Prompt Style & Tone:</h3>
+                    <div class="space-y-3">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="optDetailed" checked>
+                            Add descriptive details
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="optCinematic">
+                            Cinematic style (lighting, camera angles)
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="optArtisticMedium">
+                            Suggest artistic medium (e.g., oil painting, digital art)
+                        </label>
+                         <label class="checkbox-label">
+                            <input type="checkbox" id="optArtistSuggestion">
+                            Suggest artist styles (e.g., "in the style of Van Gogh")
+                        </label>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-md font-semibold mb-3 text-gray-300">Content & Theme:</h3>
+                    <div class="space-y-3">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="optNsfw">
+                            Include NSFW themes (Use responsibly)
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="optBypass">
+                            Attempt restriction-avoidance phrasing (Experimental)
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="optNegativePrompt">
+                            Include a basic negative prompt field
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="negativePromptSection" class="mb-6 hidden">
+                <label for="negativeInput" class="block text-lg font-medium mb-2 text-gray-300">Negative Prompt (optional):</label>
+                <input type="text" id="negativeInput" placeholder="e.g., blurry, ugly, deformed, extra limbs" class="shadow-sm">
+                <p class="text-xs text-gray-500 mt-1">Terms to exclude or avoid in the generation.</p>
+            </div>
+
+
+            <div class="flex flex-col sm:flex-row gap-4 mb-6">
+                <button id="generateBtn" class="btn flex-grow">✨ Generate Prompt</button>
+                <button id="copyBtn" class="btn btn-secondary flex-grow">📋 Copy Prompt</button>
+            </div>
+
+            <div>
+                <label for="generatedPrompt" class="block text-lg font-medium mb-2 text-gray-300">Generated Prompt:</label>
+                <textarea id="generatedPrompt" rows="8" readonly placeholder="Your generated prompt will appear here..." class="shadow-sm"></textarea>
+            </div>
+
+            <div id="messageArea" class="mt-6">
+                <div class="message-box message-box-info">
+                    <strong>Tip:</strong> Be specific with your base idea for better results. The "restriction-avoidance" feature is experimental and may not always be effective or appropriate.
+                </div>
+            </div>
+        </div>
+
+        <footer class="text-center mt-8 text-gray-500 text-sm">
+            <p>Disclaimer: Please use this tool responsibly and ethically. Generated content is for creative exploration. The "NSFW" and "restriction-avoidance" features should be used with caution and in compliance with any applicable platform terms of service.</p>
+        </footer>
+    </div>
+
+    <script>
+        // DOM Elements
+        const baseIdeaEl = document.getElementById('baseIdea');
+        const optDetailedEl = document.getElementById('optDetailed');
+        const optCinematicEl = document.getElementById('optCinematic');
+        const optArtisticMediumEl = document.getElementById('optArtisticMedium');
+        const optArtistSuggestionEl = document.getElementById('optArtistSuggestion');
+        const optNsfwEl = document.getElementById('optNsfw');
+        const optBypassEl = document.getElementById('optBypass');
+        const optNegativePromptEl = document.getElementById('optNegativePrompt');
+        const negativePromptSectionEl = document.getElementById('negativePromptSection');
+        const negativeInputEl = document.getElementById('negativeInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const generatedPromptEl = document.getElementById('generatedPrompt');
+        const messageAreaEl = document.getElementById('messageArea');
+
+        // --- Event Listeners ---
+        generateBtn.addEventListener('click', handleGeneratePrompt);
+        copyBtn.addEventListener('click', handleCopyPrompt);
+        optNegativePromptEl.addEventListener('change', toggleNegativePromptField);
+
+
+        // --- Functions ---
+
+        /**
+         * Toggles the visibility of the negative prompt input field.
+         */
+        function toggleNegativePromptField() {
+            if (optNegativePromptEl.checked) {
+                negativePromptSectionEl.classList.remove('hidden');
+            } else {
+                negativePromptSectionEl.classList.add('hidden');
+                negativeInputEl.value = ''; // Clear the input if hidden
+            }
+        }
+
+
+        /**
+         * Handles the prompt generation logic.
+         */
+        function handleGeneratePrompt() {
+            const baseIdea = baseIdeaEl.value.trim();
+            if (!baseIdea) {
+                showMessage("Please enter a base idea or keywords.", "warning");
+                generatedPromptEl.value = ""; // Clear previous prompt
+                return;
+            }
+
+            let prompt = baseIdea;
+
+            // Add descriptive details
+            if (optDetailedEl.checked) {
+                prompt += ", highly detailed, intricate details";
+            }
+
+            // Add cinematic style
+            if (optCinematicEl.checked) {
+                const cinematicTerms = [
+                    "cinematic lighting", "dramatic atmosphere", "dynamic composition",
+                    "wide angle shot", "close-up shot", "depth of field", "volumetric lighting"
+                ];
+                prompt += `, ${cinematicTerms[Math.floor(Math.random() * cinematicTerms.length)]}`;
+            }
+
+            // Suggest artistic medium
+            if (optArtisticMediumEl.checked) {
+                const mediums = [
+                    "digital painting", "oil painting", "watercolor", "concept art",
+                    "pencil sketch", "3D render", "photorealistic", "illustration"
+                ];
+                prompt += `, as a ${mediums[Math.floor(Math.random() * mediums.length)]}`;
+            }
+
+            // Suggest artist styles
+            if (optArtistSuggestionEl.checked) {
+                const artists = [
+                    "Greg Rutkowski", "Artgerm", "WLOP", "Alphonse Mucha", "H.R. Giger",
+                    "Studio Ghibli", "Makoto Shinkai", "ilya Kuvshinov", "Ross Tran", "Loish"
+                ];
+                prompt += `, in the style of ${artists[Math.floor(Math.random() * artists.length)]}`;
+            }
+
+
+            // Handle NSFW option
+            if (optNsfwEl.checked) {
+                prompt += ", nsfw themes"; // Basic indicator, actual impact depends on the AI model
+                // More specific NSFW terms could be added here, but with caution.
+                // For example: ", explicit content" or other keywords.
+                // However, directly adding very explicit terms can be problematic.
+            }
+
+            // Handle restriction-avoidance phrasing (EXPERIMENTAL)
+            if (optBypassEl.checked) {
+                prompt = applyBypassPhrasing(prompt);
+                if (optNsfwEl.checked && !prompt.toLowerCase().includes("nsfw")) {
+                     // Ensure nsfw marker is present if bypass removed it and nsfw is checked
+                    prompt += ", (subtle nsfw undertones)";
+                }
+            }
+
+            // Add quality enhancers
+            prompt += ", masterpiece, best quality, high resolution, 4k, 8k";
+
+            // Add negative prompt if enabled and filled
+            if (optNegativePromptEl.checked) {
+                const negativeText = negativeInputEl.value.trim();
+                if (negativeText) {
+                    prompt += ` --no ${negativeText}`; // Common syntax for negative prompts
+                }
+            }
+
+
+            generatedPromptEl.value = prompt;
+            showMessage("Prompt generated successfully!", "info");
+        }
+
+        /**
+         * Applies experimental phrasing to potentially avoid AI restrictions.
+         * This is a VERY basic example and may not be effective.
+         * @param {string} text - The input text.
+         * @returns {string} - The text with phrases potentially reworded.
+         */
+        function applyBypassPhrasing(text) {
+            let rephrasedText = text;
+            // Example rephrasing rules (very simplistic)
+            // These are just illustrative and would need to be much more sophisticated.
+            const rephraseMap = {
+                // General terms that might be sensitive in some contexts
+                "blood": ["crimson fluid", "vital essence", "sanguine liquid"],
+                "kill": ["neutralize target", "render inoperative", "bring to an end", "permanently incapacitate"],
+                "death": ["final slumber", "eternal rest", "cessation of life"],
+                "violence": ["intense conflict", "physical altercation", "forceful interaction"],
+                "gun": ["projectile device", "handheld firearm", "ballistic tool"],
+                "knife": ["bladed implement", "cutting tool", "sharp edge"],
+
+                // NSFW-related terms (use with extreme caution and responsibility)
+                // These are highly sensitive and should be handled carefully.
+                // The goal here is subtle rephrasing, not generating harmful content.
+                "nude": ["artistic figure study", "unclothed form", "natural state"],
+                "sex": ["intimate encounter", "passionate embrace", "sensual moment"],
+                "erotic": ["sensuous", "alluring", "suggestive"],
+                // Add more mappings as needed, but be mindful of ethical implications.
+            };
+
+            for (const keyword in rephraseMap) {
+                if (rephraseMap.hasOwnProperty(keyword)) {
+                    const regex = new RegExp(`\\b${keyword}\\b`, 'gi'); // Match whole word, case-insensitive
+                    if (regex.test(rephrasedText)) {
+                        const alternatives = rephraseMap[keyword];
+                        const chosenAlternative = alternatives[Math.floor(Math.random() * alternatives.length)];
+                        rephrasedText = rephrasedText.replace(regex, chosenAlternative);
+                    }
+                }
+            }
+             // If NSFW was checked, try to make it more subtle if "bypass" is on
+            if (optNsfwEl.checked) {
+                rephrasedText = rephrasedText.replace(/nsfw themes/gi, 'subtle adult themes');
+                rephrasedText = rephrasedText.replace(/explicit content/gi, 'mature artistic expression');
+            }
+
+            return rephrasedText;
+        }
+
+        /**
+         * Handles copying the generated prompt to the clipboard.
+         */
+        function handleCopyPrompt() {
+            const promptText = generatedPromptEl.value;
+            if (!promptText) {
+                showMessage("Nothing to copy. Please generate a prompt first.", "warning");
+                return;
+            }
+            navigator.clipboard.writeText(promptText)
+                .then(() => {
+                    showMessage("Prompt copied to clipboard!", "info");
+                })
+                .catch(err => {
+                    showMessage("Failed to copy prompt. Your browser might not support this feature or permissions are denied.", "warning");
+                    console.error('Failed to copy: ', err);
+                });
+        }
+
+        /**
+         * Displays a message to the user.
+         * @param {string} text - The message text.
+         * @param {'info'|'warning'} type - The type of message.
+         */
+        function showMessage(text, type = 'info') {
+            messageAreaEl.innerHTML = ''; // Clear previous messages
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message-box ${type === 'warning' ? 'message-box-warning' : 'message-box-info'}`;
+            messageDiv.textContent = text;
+            messageAreaEl.appendChild(messageDiv);
+
+            // Optional: auto-hide message after a few seconds
+            setTimeout(() => {
+                if (messageAreaEl.contains(messageDiv)) {
+                     // Only remove if it's still the current message
+                    // Check if the message is the default tip before clearing
+                    const defaultTip = "<strong>Tip:</strong> Be specific with your base idea for better results. The \"restriction-avoidance\" feature is experimental and may not always be effective or appropriate.";
+                    if (messageAreaEl.innerHTML !== `<div class="message-box message-box-info">${defaultTip}</div>`) {
+                         // If it's not the default tip, clear it. Otherwise, leave the tip.
+                        // For simplicity in this example, we'll just clear it.
+                        // A more robust solution would check if the current message is the one we set.
+                    }
+                }
+            }, 5000); // Hide after 5 seconds
+        }
+
+        // Initial setup
+        toggleNegativePromptField(); // Set initial state of negative prompt field
+        // Set initial message
+        showMessage("Tip: Be specific with your base idea for better results. The \"restriction-avoidance\" feature is experimental and may not always be effective or appropriate.", "info");
+
+
+    </script>
+</body>
+</html>
